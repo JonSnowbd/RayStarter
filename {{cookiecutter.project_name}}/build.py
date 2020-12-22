@@ -44,6 +44,7 @@ if(args.release == False):
 else:
     defines.append("RELEASE")
 
+# Start building the command. This will be run by your system.
 command = cc
 command += " "+" ".join(cfiles)
 command += " -o "+file_output
@@ -67,11 +68,14 @@ if(args.output):
 # Create the bin folder if it doesnt exist already.
 os.makedirs(bincontainer, mode=0o777, exist_ok=True)
 
+# Run Command
 print("Building {{cookiecutter.project_name}}...", end=" ")
 command_res = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
-if command_res.returncode != 0:
+
+if command_res.returncode != 0: # Build didnt work:
     print("Welp, something went wrong. StdErr:\n"+command_res.stderr+"\n\n StdOut:\n"+command_res.stdout)
-else:
+
+else: # Build Success:
     print("Success!")
     if args.release:
         print("Minimizing Binary...", end=" ")
@@ -82,7 +86,7 @@ else:
             print("Finished!")
     if args.launch or args.gdb:
         print ("Launching {{cookiecutter.project_name}}...")
-        os.chdir(bincontainer)
+        os.chdir(bincontainer) # Run it with the bin output folder as CWD to maintain file paths in the game.
         if args.gdb:
             if args.release:
                 print("Warning! GDB might act weird with a release build .exe and breaking.\n")
